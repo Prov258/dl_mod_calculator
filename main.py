@@ -3,13 +3,15 @@ import random
 import tkinter as tk
 
 
-def calc_handler(a, mod, res_label):
+def calc_handler(a, power, mod, res_label):
+    a = int(a)
     mod = int(mod)
 
-    if ("^" in a):
-        a = change_base(a, mod)
+    if (power):
+        power = int(power)
+        a = change_base(a, power, mod)
 
-    res = findMod(int(a), mod)
+    res = findMod(a, mod)
 
     res_label["text"] = str(res)
 
@@ -21,7 +23,7 @@ def equation_handler(a, b, mod, res_label):
 
     power_of_a = eyler_func(mod) - 1
 
-    a = change_base(f"{a}^{power_of_a}", mod)
+    a = change_base(a, power_of_a, mod)
 
     res_label["text"] = str(findMod(a * b, mod))
 
@@ -43,7 +45,7 @@ def generate_handler(a, b, res_label):
 def is_number_simple(p):
     for _ in range(10):
         a = random.randrange(1, p)
-        a = change_base(f"{a}^{p - 1}", p)
+        a = change_base(a, p - 1, p)
         if (findMod(a, p) != findMod(1, p)):
             return False
 
@@ -72,9 +74,8 @@ def greatest_common_divisor(a, b):
     return b
 
 
-def destruct_pow(m):
+def destruct_pow(power):
     destruct_power = []
-    power = int(m[m.find('^')+1:])
 
     binary = binary_from_decimal(power)[::-1]
 
@@ -106,9 +107,8 @@ def findMod(m, mod):
     return m - math.floor(m / mod) * mod
 
 
-def change_base(m, mod):
-    base = int(m[:m.find('^')])
-    destructed_power = destruct_pow(m)
+def change_base(base, power, mod):
+    destructed_power = destruct_pow(power)
     total = 1
 
     for i in pow_loop(1, max(destructed_power)):
@@ -136,17 +136,21 @@ def init_gui():
     frm_calc = tk.Frame(master=window)
 
     ent_calc_a = tk.Entry(master=frm_calc)
+    lbl_calc_power = tk.Label(master=frm_calc, text="^")
+    ent_calc_power = tk.Entry(master=frm_calc)
     lbl_calc_mod = tk.Label(master=frm_calc, text="mod")
     ent_calc_mod = tk.Entry(master=frm_calc)
     lbl_calc_x = tk.Label(master=frm_calc, text="= x")
 
     ent_calc_a.grid(row=0, column=0)
-    lbl_calc_mod.grid(row=0, column=1)
-    ent_calc_mod.grid(row=0, column=2)
-    lbl_calc_x.grid(row=0, column=3)
+    lbl_calc_power.grid(row=0, column=1)
+    ent_calc_power.grid(row=0, column=2)
+    lbl_calc_mod.grid(row=0, column=3)
+    ent_calc_mod.grid(row=0, column=4)
+    lbl_calc_x.grid(row=0, column=5)
 
     btn_calc_result = tk.Button(master=frm_calc, text="Solve", command=lambda: calc_handler(
-        ent_calc_a.get(), ent_calc_mod.get(), lbl_calc_result))
+        ent_calc_a.get(), ent_calc_power.get(), ent_calc_mod.get(), lbl_calc_result))
 
     btn_calc_result.grid(row=1, column=0)
 
